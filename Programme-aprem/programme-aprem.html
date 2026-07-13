@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Au programme demain...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A41;
+    --dusk:#4672df;
+    --bleuclair:#3878d8;
+    --paper:#FAF3E7;
+    --mint:#8FD9C4;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:32px 16px;
+    background:var(--ink);
+    font-family:'Inter',sans-serif;color:var(--ink);
+  }
+  .card{
+    position:relative;z-index:2;
+    width:100%;max-width:440px;
+    background:var(--paper);
+    border-radius:18px;
+    padding:28px 26px 24px;
+    box-shadow:0 25px 50px -18px rgba(0,0,0,0.5);
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dusk);opacity:.7;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;
+    margin:0 0 20px;line-height:1.2;
+  }
+  .screen{display:none;animation:in .4s ease;}
+  .screen.active{display:block;}
+  @keyframes in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  .q{
+    font-family:'Montserrat',sans-serif;font-weight:700;font-size:18px;
+    margin:0 0 16px;color:var(--ink);
+  }
+  .options{display:flex;flex-direction:column;gap:9px;}
+  .opt{
+    all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;
+    padding:13px 15px;border-radius:11px;
+    border:1.5px solid rgba(27,42,65,.15);
+    background:rgba(255,255,255,.5);
+    font-size:14.5px;font-weight:500;
+    transition:border-color .2s,background .2s,transform .15s;
+  }
+  .opt:hover{border-color:var(--bleuclair);background:rgba(74, 126, 205, 0.09);transform:translateX(2px);}
+  .opt:active{transform:scale(.98);}
+  .ic{font-size:17px;}
+
+  .backrow{margin-top:14px;}
+  .back{
+    all:unset;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;
+    color:var(--dusk);opacity:.65;
+  }
+  .back:hover{opacity:1;}
+
+  .progress{display:flex;gap:6px;margin-bottom:18px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(27,42,65,.15);transition:background .3s;}
+  .dot.done{background:var(--bleuclair);}
+
+  /* pas de titre sur ces écrans */
+  .card.no-title-mode .eyebrow,
+  .card.no-title-mode h1{display:none;}
+  .card.hello-mode{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;min-height:260px;cursor:pointer;
+  }
+  .hello-big{
+    font-family:'Gill Sans','Gill Sans MT','Montserrat',sans-serif;font-weight:800;
+    font-size:28px;line-height:1.25;color:var(--ink);margin:0 0 10px;
+  }
+  .hello-sub{
+    font-family:'Inter',sans-serif;font-weight:500;font-size:14px;color:var(--bleuclair);
+    letter-spacing:.01em;margin:0 0 26px;
+  }
+  .hello-tap{
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--dusk);opacity:.55;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+
+  /* intro */
+  .intro-title{
+    font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;line-height:1.3;
+    margin:0 0 14px;color:var(--ink);
+  }
+  .intro-text{
+    font-size:14.5px;line-height:1.55;color:#3a3a3a;margin:0 0 22px;
+  }
+  .start-btn{
+    all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink);color:var(--paper);
+    font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;
+    letter-spacing:.02em;
+    padding:13px 20px;border-radius:11px;
+    transition:background .2s,transform .15s;
+  }
+  .start-btn:hover{background:var(--dusk);transform:translateX(2px);}
+  .start-btn:active{transform:scale(.98);}
+
+  /* recap */
+  .recap-tag{
+    display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;
+    letter-spacing:.1em;text-transform:uppercase;background:var(--mint);
+    color:var(--ink);padding:4px 10px;border-radius:999px;margin-bottom:14px;
+  }
+  .timeline{display:flex;flex-direction:column;}
+  .step{display:flex;gap:14px;padding-bottom:18px;position:relative;}
+  .step:not(:last-child)::before{
+    content:"";position:absolute;left:26px;top:26px;bottom:0;
+    border-left:1.5px dashed rgba(27,42,65,.25);
+  }
+  .time{
+    font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;
+    color:var(--dusk);width:58px;flex-shrink:0;padding-top:2px;
+  }
+  .dotmark{
+    width:10px;height:10px;border-radius:50%;background:var(--mint);
+    margin-top:5px;flex-shrink:0;
+  }
+  .step-text{padding-bottom:2px;}
+  .step-title{font-weight:600;font-size:14.5px;margin-bottom:2px;}
+  .step-desc{font-size:13px;color:#4a4a4a;line-height:1.5;}
+
+  .replay{
+    all:unset;cursor:pointer;margin-top:6px;display:inline-block;
+    font-family:'Space Mono',monospace;font-size:11.5px;color:var(--dusk);
+    border-bottom:1px solid rgba(61,59,107,.4);
+  }
+  .replay:hover{color:var(--bleuclair);border-color:var(--bleuclair);}
+
+  /* movie accordion */
+  .movie-accordion{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .movie-row{border-radius:11px;border:1.5px solid rgba(27,42,65,.15);overflow:hidden;background:rgba(255,255,255,.5);}
+  .movie-toggle{
+    all:unset;box-sizing:border-box;cursor:pointer;width:100%;
+    display:flex;align-items:center;gap:11px;padding:12px 14px;
+  }
+  .movie-meta{flex:1;display:flex;flex-direction:column;gap:2px;text-align:left;}
+  .movie-title{font-size:13.5px;font-weight:600;color:var(--ink);}
+  .movie-rating{font-family:'Space Mono',monospace;font-size:11px;color:var(--dusk);opacity:.75;}
+  .chev{font-size:12px;color:var(--dusk);opacity:.6;flex-shrink:0;}
+  .movie-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .movie-detail.open{max-height:80px;}
+  .detail-inner{padding:0 14px 12px;font-size:12.5px;color:#4a4a4a;line-height:1.5;}
+
+  /* confetti */
+  .confetti-layer{
+    position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50;
+  }
+  .confetti-piece{
+    position:absolute;top:-20px;border-radius:2px;
+    animation-name:confetti-fall;
+    animation-timing-function:cubic-bezier(.25,.46,.45,.94);
+    animation-fill-mode:forwards;
+  }
+  @keyframes confetti-fall{
+    0%{transform:translateY(0) rotate(0deg);opacity:1;}
+    100%{transform:translateY(115vh) rotate(540deg);opacity:.9;}
+  }
+
+  /* hearts firework */
+  .hearts-layer{
+    position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1;
+  }
+  .heart-piece{
+    position:absolute;top:50%;left:50%;
+    opacity:0;
+    animation-name:heart-burst;
+    animation-timing-function:cubic-bezier(.19,.85,.35,1.15);
+    animation-fill-mode:forwards;
+  }
+  @keyframes heart-burst{
+    0%{transform:translate(-50%,-50%) scale(.25) rotate(0deg);opacity:0;}
+    12%{opacity:1;}
+    70%{opacity:1;}
+    100%{
+      transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1) rotate(var(--rot));
+      opacity:0;
+    }
+  }
+
+  /* fireworks */
+  .fireworks-layer{
+    position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60;
+  }
+  .firework-piece{
+    position:absolute;top:50%;left:50%;
+    width:10px;height:10px;border-radius:50%;
+    opacity:0;box-shadow:0 0 16px 3px currentColor;
+    animation-name:firework-burst;
+    animation-timing-function:cubic-bezier(.13,.79,.32,1);
+    animation-fill-mode:forwards;
+  }
+  @keyframes firework-burst{
+    0%{transform:translate(-50%,-50%) scale(.6);opacity:0;}
+    8%{opacity:1;}
+    100%{
+      transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(.15);
+      opacity:0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="confetti-layer" id="confettiLayer"></div>
+<div class="hearts-layer" id="heartsLayer"></div>
+<div class="fireworks-layer" id="fireworksLayer"></div>
+
+<div class="card">
+  <div class="eyebrow">que nous résèrve mardi 14 juillet ?</div>
+  <h1>Le programme de mardi aprèm</h1>
+
+  <div class="progress" id="progress"></div>
+
+  <!-- HELLO (pas de titre sur cet écran) -->
+  <div class="screen active" data-screen="hello" onclick="revealIntro()">
+    <div class="hello-big">COUCOU GROS BB !!</div>
+    <div class="hello-sub">Surprise... clique ici pour en savoir plus</div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="screen" data-screen="intro">
+    <div class="intro-title">On se prépare notre programme de demain ensemble ✨</div>
+    <p class="intro-text">Petit questionnaire pour demain aprèm. Trois petites questions, deux minutes (même pas), et tu as notre programme.</p>
+    <button class="start-btn" onclick="goTo('q1')">On commence →</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="screen" data-screen="q1">
+    <div class="q">Pour le déj, qu'est-ce qui te brancherait ?</div>
+    <div class="options">
+      <button class="opt" onclick="answer('dej','surprise_maison')"><span class="ic">🥘</span> Je te fais une surprise (repas maison)</button>
+      <button class="opt" onclick="answer('dej','sandwich')"><span class="ic">🥪</span> Sandwich, flemme + canicule</button>
+      <button class="opt" onclick="answer('dej','on_se_laisse_surprendre')"><span class="ic">❓</span> Laisse moi choisir pour toi</button>
+    </div>
+    <div class="backrow"><button class="back" onclick="goTo('intro')">← retour</button></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="screen" data-screen="q2">
+    <div class="q">Et l'aprem, on fait quoi ?</div>
+    <div class="options">
+      <button class="opt" onclick="answer('activite','shopping')"><span class="ic">🛍️</span> Shopping, on se fait plaisir</button>
+      <button class="opt" onclick="answer('activite','lechevitrine')"><span class="ic">👀</span> Lèche-vitrine, on regarde juste</button>
+      <button class="opt" onclick="answer('activite','balade_inconnue')"><span class="ic">🚶</span> Balade dans un coin qu'on connaît pas</button>
+      <button class="opt" onclick="answer('activite','cinema')"><span class="ic">🎬</span> Ciné, au frais</button>
+      <button class="opt" onclick="answer('activite','seine')"><span class="ic">🍦</span> Glace + balade au bord de la Seine</button>
+      <button class="opt" onclick="answer('activite','parc')"><span class="ic">🌳</span> Pépouse à l'ombre, dans un parc</button>
+    </div>
+    <div class="backrow"><button class="back" onclick="goTo('q1')">← retour</button></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="screen" data-screen="q3">
+    <div class="q">Après le ZigZag, on rentre... comment ?</div>
+    <div class="options">
+      <button class="opt" onclick="answer('retour','metro')"><span class="ic">🚇</span> En métro</button>
+      <button class="opt" onclick="answer('retour','velo')"><span class="ic">🚲</span> À vélo</button>
+      <button class="opt" onclick="answer('retour','pied')"><span class="ic">👟</span> À pied</button>
+      <button class="opt" onclick="answer('retour','balade_soir')"><span class="ic">🌙</span> On traîne encore un peu</button>
+    </div>
+    <div class="backrow"><button class="back" onclick="goTo('q2')">← retour</button></div>
+  </div>
+
+  <!-- RECAP -->
+  <div class="screen" data-screen="recap">
+    <div class="recap-tag">Programme validé</div>
+    <div class="timeline" id="timeline"></div>
+    <button class="replay" onclick="restart()">refaire le questionnaire ↺</button>
+  </div>
+
+</div>
+
+<script>
+const answers = {};
+const STEP_INDEX = { q1:0, q2:1, q3:2 };
+
+function renderProgress(step){
+  const box = document.getElementById('progress');
+  box.innerHTML = '';
+  for(let i=0;i<3;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i < step ? ' done' : '');
+    box.appendChild(d);
+  }
+}
+
+function goTo(screenName){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`[data-screen="${screenName}"]`).classList.add('active');
+  const card = document.querySelector('.card');
+  card.classList.toggle('hello-mode', screenName === 'hello');
+  card.classList.toggle('no-title-mode', screenName === 'hello' || screenName === 'intro');
+  const progressEl = document.getElementById('progress');
+  if(screenName in STEP_INDEX){
+    progressEl.style.display = 'flex';
+    renderProgress(STEP_INDEX[screenName]);
+  } else {
+    progressEl.style.display = 'none';
+  }
+}
+
+function launchFireworks(){
+  const layer = document.getElementById('fireworksLayer');
+  const colors = ['#4672df','#3878d8','#8FD9C4','#FF6B57','#FAF3E7'];
+  const bursts = 4;
+  for(let b=0;b<bursts;b++){
+    setTimeout(()=>{
+      const originX = (20 + Math.random()*60) + 'vw';
+      const originY = (18 + Math.random()*45) + 'vh';
+      const color = colors[Math.floor(Math.random()*colors.length)];
+      const count = 28;
+      for(let i=0;i<count;i++){
+        const piece = document.createElement('div');
+        piece.className = 'firework-piece';
+        piece.style.color = color;
+        piece.style.background = color;
+        const angle = (Math.PI*2*i)/count + Math.random()*0.3;
+        const distance = 130 + Math.random()*160;
+        const tx = Math.cos(angle)*distance;
+        const ty = Math.sin(angle)*distance;
+        piece.style.setProperty('--tx', tx+'px');
+        piece.style.setProperty('--ty', ty+'px');
+        piece.style.left = originX;
+        piece.style.top = originY;
+        const size = 8 + Math.random()*6;
+        piece.style.width = size+'px';
+        piece.style.height = size+'px';
+        const duration = 2.2 + Math.random()*0.9;
+        piece.style.animationDuration = duration + 's';
+        layer.appendChild(piece);
+        setTimeout(()=>piece.remove(), duration*1000 + 200);
+      }
+    }, b*650);
+  }
+}
+
+function answer(key, value){
+  answers[key] = value;
+  if(key === 'dej') goTo('q2');
+  else if(key === 'activite') goTo('q3');
+  else if(key === 'retour'){ buildRecap(); goTo('recap'); launchFireworks(); }
+}
+
+const DEJ_TEXT = {
+  surprise_maison: "Je te fais un truc surprise à la maison : tu auras le choix entre tomates farcies d'été, lasagnes froides, tataki de bœuf ou salade thaï au bœuf.",
+  sandwich: "Sandwich vite fait, zéro effort avec cette chaleur : boulangerie au hasard, Joe & the Juice ou une bonne focaccia, à toi de voir.",
+  on_se_laisse_surprendre: "Mystère total, j'ai déjà quelques idées (bon j'avoue ce sera peut-être un resto piqué dans mes trucs sauvegardés sur TikTok...) Dis-moi juste l'ambiance : italienne, japonaise, mexicaine,... ?"
+};
+
+const ACTIVITE_TEXT = {
+  shopping: "Shopping, je te propose dans le coin d'Opéra mais t'inquiète, tu auras le choix entre Le Marais, Opéra, les Grands Boulevards, les Galeries Lafayette, Citadium...",
+  lechevitrine: "Vitrines, on regarde sans craquer (on essaie) : Le Marais, Opéra, les Grands Boulevards, Galeries Lafayette, Citadium... comme tu veux.",
+  balade_inconnue: "Surprise totale, on part marcher ! N'hésite pas à me dire si un endroit t'attire plus qu'un autre et je m'occupe du reste. ",
+  cinema: "Ciné au frais, vu que le 14 juillet les musées sont fermés ! On peut viser une séance en début d'aprèm pour profiter de la clim avant qu'il fasse trop chaud dehors. Regarde en dessous, tu as le choix entre trois films.",
+  seine: "Glace à la main, direction les quais !",
+  parc: "Tranquillou à l'ombre : soit un nouveau parc à découvrir, soit un qu'on connaît déjà, des idées ?"
+};
+
+const RETOUR_TEXT = {
+  metro: "Retour en métro, plus simple avec cette chaleur.",
+  velo: "Retour à vélo.",
+  pied: "Retour à pied, histoire de papoter encore un peu.",
+  balade_soir: "On traîne encore un peu, tu choisis : on longe la Seine, petit crochet par la Tour Eiffel, ou dernier verre en terrasse."
+};
+
+const GOUTER_TEXT = "Petite pause sucrée, on avisera selon où on traîne dans Paris à ce moment-là : tiramisu à emporter, glace, cookies, un p'tit Subway sucré, fondant au chocolat... on choisira sur le moment !";
+
+const MOVIES = [
+  { title:"Des Minions et des Monstres", note:"3,3", blurb:"Animation familiale, pour un moment léger et rafraîchissant." },
+  { title:"La Bataille de Gaulle — Partie 1", note:"3,8", blurb:"Biopic historique en grand format, plus posé." },
+  { title:"Jim Queen", note:"4", blurb:"Comédie animée déjantée et décalée." }
+];
+
+function buildMovieAccordion(){
+  return `
+    <div class="movie-accordion">
+      ${MOVIES.map((m,i)=>`
+        <div class="movie-row">
+          <button class="movie-toggle" onclick="toggleMovie(${i})">
+            <span class="movie-meta">
+              <span class="movie-title">${m.title}</span>
+              <span class="movie-rating">★ ${m.note}/5 sur Letterboxd</span>
+            </span>
+            <span class="chev" id="chev-${i}">▾</span>
+          </button>
+          <div class="movie-detail" id="movie-${i}">
+            <div class="detail-inner">${m.blurb}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function toggleMovie(i){
+  const el = document.getElementById(`movie-${i}`);
+  const chev = document.getElementById(`chev-${i}`);
+  const isOpen = el.classList.toggle('open');
+  chev.textContent = isOpen ? '▴' : '▾';
+}
+
+function buildRecap(){
+  const steps = [
+    {time:'13:30', title:'Déjeuner', desc:DEJ_TEXT[answers.dej]},
+    {time:'14:30', title:'Activité', desc:ACTIVITE_TEXT[answers.activite], extra: answers.activite === 'cinema' ? buildMovieAccordion() : ''},
+  ];
+
+  if(answers.activite !== 'seine'){
+    steps.push({time:'16:00', title:'Goûter', desc:GOUTER_TEXT});
+  }
+
+  steps.push(
+    {time:'17:00', title:'ZigZag (15e) — apéro & match', desc:"On file vers 17h, faut être là tôt... Camembert rôti, pintes pêche, et on patiente jusqu'au coup d'envoi à 21h !!"},
+    {time:'22h30~23h', title:'Retour', desc:RETOUR_TEXT[answers.retour]}
+  );
+
+  const box = document.getElementById('timeline');
+  box.innerHTML = '';
+  steps.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'step';
+    el.innerHTML = `
+      <div class="time">${s.time}</div>
+      <div class="dotmark"></div>
+      <div class="step-text">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+        ${s.extra || ''}
+      </div>`;
+    box.appendChild(el);
+  });
+}
+
+function launchConfetti(){
+  const layer = document.getElementById('confettiLayer');
+  const colors = ['#4672df', '#3878d8', '#8FD9C4', '#1B2A41', '#FAF3E7'];
+  const count = 90;
+  for(let i=0;i<count;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const size = 6 + Math.random()*6;
+    piece.style.width = size + 'px';
+    piece.style.height = (size*0.4) + 'px';
+    piece.style.left = Math.random()*100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    const duration = 2.2 + Math.random()*1.4;
+    const delay = Math.random()*0.4;
+    piece.style.animationDuration = duration + 's';
+    piece.style.animationDelay = delay + 's';
+    layer.appendChild(piece);
+    setTimeout(()=>piece.remove(), (duration+delay)*1000 + 200);
+  }
+}
+
+function launchHearts(){
+  const layer = document.getElementById('heartsLayer');
+  const emojis = ['❤️','💕','💖','💗','💘','🩷'];
+  const bursts = 3;
+  for(let b=0;b<bursts;b++){
+    setTimeout(()=>{
+      const originX = (40 + Math.random()*20) + 'vw';
+      const originY = (40 + Math.random()*20) + 'vh';
+      const count = 12;
+      for(let i=0;i<count;i++){
+        const piece = document.createElement('div');
+        piece.className = 'heart-piece';
+        piece.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        const angle = (Math.PI*2*i)/count + Math.random()*0.4;
+        const distance = 90 + Math.random()*130;
+        const tx = Math.cos(angle)*distance;
+        const ty = Math.sin(angle)*distance;
+        piece.style.setProperty('--tx', tx+'px');
+        piece.style.setProperty('--ty', ty+'px');
+        piece.style.setProperty('--rot', (Math.random()*160-80)+'deg');
+        piece.style.left = originX;
+        piece.style.top = originY;
+        piece.style.fontSize = (16 + Math.random()*14) + 'px';
+        const duration = 1.4 + Math.random()*0.6;
+        piece.style.animationDuration = duration + 's';
+        layer.appendChild(piece);
+        setTimeout(()=>piece.remove(), duration*1000 + 200);
+      }
+    }, b*350);
+  }
+}
+
+function revealIntro(){
+  launchConfetti();
+  goTo('intro');
+}
+
+function restart(){
+  for(const k in answers) delete answers[k];
+  goTo('intro');
+}
+
+goTo('hello');
+launchHearts();
+</script>
+
+</body>
+</html>
